@@ -5,6 +5,7 @@ import Dishdetails from './DishdetailComponent';
 import Header from './HeaderComponent';
 import Footer from './FooterComponent';
 import Home from './HomeComponent';
+import About from './AboutComponent';
 import Contact from './ContactComponent';
 import { DISHES } from '../shared/dishes';
 import { PROMOTIONS } from '../shared/promotions';
@@ -32,15 +33,30 @@ class Main extends Component {
           promotion = {this.state.promotions.filter((promo) => promo.featured)[0]}
           leader = {this.state.leaders.filter((leader) => leader.featured)[0]}
         />
+      );
+    }
+
+    const AboutUs = () => {
+      return(
+        <About leaders = {this.state.leaders} />
+      );
+    }
+
+    const DishwithId = ({match}) => {
+      return(
+        <Dishdetails dish={this.state.dishes.filter((dish) => dish.id === parseInt(match.params.dishId, 10))[0]}
+          comments={this.state.comments.filter((comment) => comment.id === parseInt(match.params.dishId, 10))} />
       )
     }
-    console.log("Main component render invoked");
+    // console.log("Main component render invoked");
     return (
       <div>
         <Header />
         <Switch>
           <Route path="/home" component={Homepage} />
+          <Route exact path="/aboutus" component={AboutUs} />
           <Route exact path="/menu" component={()=><Menu dishes={this.state.dishes} />} />
+          <Route path="/menu/:dishId" component={DishwithId} />
           <Route exact path="/contactus" component={Contact} />
           <Redirect to="/home" />
         </Switch>
