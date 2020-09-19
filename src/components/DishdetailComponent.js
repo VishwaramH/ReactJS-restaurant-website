@@ -15,6 +15,9 @@ class CommentForm extends Component {
     this.state = {
       isModalOpen : false
     }
+
+    this.toggleModal = this.toggleModal.bind(this);
+    this.handleCommentForm = this.handleCommentForm.bind(this);
   }
 
   toggleModal() {
@@ -25,8 +28,7 @@ class CommentForm extends Component {
 
   handleCommentForm(values) {
     this.toggleModal();
-    console.log("Current state is " + JSON.stringify(values));
-    alert("Current state is " + JSON.stringify(values));
+    this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
   }
 
   render() {
@@ -39,34 +41,38 @@ class CommentForm extends Component {
         <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal} >
           <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
           <ModalBody>
-            <LocalForm onSubmit={(values) => this.handleCommentForm(values)}>
+            <LocalForm onSubmit={this.handleCommentForm}>
             <Row className="form-group">
-              <Label htmlFor="name">Rating</Label>
-                <Control.select model=".rating" name="rating"
-                  className="form-control" >
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-                </Control.select>
+              <Label htmlFor="name" md={12}>Rating</Label>
+                <Col md={12}>
+                  <Control.select model=".rating" name="rating"
+                    className="form-control" >
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                  </Control.select>
+                </Col>
               </Row>
               <Row className="form-group">
-                <Label htmlFor="name">Your name</Label>
-                <Control.text model=".name" id="name" name="name" className="form-control" 
-                validators = {{
-                  required, minLength: minLength(3), maxLength: maxLength(15)
-                }} />
-                <Errors className="text-danger" show="touched" model=".email"
-                  messages={{
-                    required: 'Required ',
-                    minLength: 'Must be greater than 2 characters',
-                    maxLength: 'Must be 15 characters or less'
-                }} />
+                <Label htmlFor="author" md={12}>Your name</Label>
+                <Col md={12}>
+                  <Control.text model=".author" id="author" name="author" className="form-control" placeholder="Your Name"
+                  validators = {{
+                    required, minLength: minLength(3), maxLength: maxLength(15)
+                  }} />
+                  <Errors className="text-danger" show="touched" model=".name"
+                    messages={{
+                      required: 'Required ',
+                      minLength: 'Must be greater than 2 characters',
+                      maxLength: 'Must be 15 characters or less'
+                  }} />
+                </Col>
               </Row>
               <Row className="form-group">
-                <Label htmlFor="comment">Comment</Label>
-                <Col md={10}>
+                <Label htmlFor="comment" md={12}>Comment</Label>
+                <Col md={12}>
                   <Control.textarea model=".comment" id="comment" name="comment"
                     rows="6" className="form-control" />
                 </Col>
@@ -99,7 +105,7 @@ class CommentForm extends Component {
     }
   }
 
-  function RenderComments( {comments} ) { //props as the function parameter
+  function RenderComments( {comments, addComment, dishId} ) { //props as the function parameter
     if(comments!=null) {
       const cmts = comments.map(cmt => {
         return(
@@ -113,7 +119,7 @@ class CommentForm extends Component {
                 day: '2-digit'
               }).format(new Date(cmt.date))}
             </p>
-            <CommentForm />
+            <CommentForm dishId={dishId} addComment={addComment} />
           </li>
         );
       });
@@ -134,7 +140,7 @@ class CommentForm extends Component {
     
   }
   const Dishdetails = (props) => {
-    const dish = props.selectedDish;
+    const dish = props.dish;
     if(dish==null) {
       return(
         <div></div>
@@ -157,7 +163,8 @@ class CommentForm extends Component {
             <RenderDish dish={props.dish} />
           </div>
           <div className="col-12 col-md-5 m-1">
-            <RenderComments comments={props.comments} />
+            <RenderComments comments={props.comments} 
+            addComment={props.addComment} dishId={props.dish.id} />
           </div>
         </div>
       </div>
