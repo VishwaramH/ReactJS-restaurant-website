@@ -1,7 +1,5 @@
 import * as ActionTypes from './ActionTypes';
-import { DISHES } from '../shared/dishes';
 import { baseUrl } from '../shared/baseUrl';
-import { actionTypes } from 'react-redux-form';
 
 export const addComment = (comment) => ({
   type : ActionTypes.ADD_COMMENT,
